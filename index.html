@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Bancos Brasileiros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            background: white;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .results-container {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .results-count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s ease;
+        }
+
+        .table tr:hover {
+            background: rgba(79, 172, 254, 0.05);
+        }
+
+        .bank-code {
+            font-weight: 600;
+            color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            display: inline-block;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .bank-name {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .ispb-code {
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: #6b7280;
+            background: #f9fafb;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .no-results {
+            padding: 3rem;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .no-results-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading {
+            padding: 2rem;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 0.1rem 0.2rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .bank-name {
+                font-size: 0.85rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🏦 Buscador de Bancos</h1>
+            <p class="subtitle">Encontre informações dos bancos brasileiros de forma rápida e fácil</p>
+        </div>
+
+        <div class="search-container">
+            <div class="search-icon">🔍</div>
+            <input 
+                type="text" 
+                class="search-input" 
+                id="searchInput" 
+                placeholder="Digite o nome do banco, código ou ISPB..."
+                autocomplete="off"
+            >
+        </div>
+
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <span>📊 Resultados da Busca</span>
+                <span class="results-count" id="resultsCount">0 bancos encontrados</span>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nome do Banco</th>
+                            <th>Código ISPB</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTable">
+                        <tr class="loading">
+                            <td colspan="3">Digite algo para começar a busca...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const bankData = [
+            {code: "1", name: "BANCO DO BRASIL S.A (BB)", ispb: "0"},
+            {code: "237", name: "BRADESCO S.A", ispb: "60746948"},
+            {code: "335", name: "Banco Digio S.A", ispb: "27098060"},
+            {code: "260", name: "NU PAGAMENTOS S.A (NUBANK)", ispb: "18236120"},
+            {code: "290", name: "Pagseguro Internet S.A (PagBank)", ispb: "8561701"},
+            {code: "380", name: "PicPay Servicos S.A.", ispb: "22896431"},
+            {code: "323", name: "Mercado Pago - conta do Mercado Livre", ispb: "10573521"},
+            {code: "237", name: "NEXT BANK (UTILIZAR O MESMO CÓDIGO DO BRADESCO)", ispb: "60746948"},
+            {code: "637", name: "BANCO SOFISA S.A (SOFISA DIRETO)", ispb: "60889128"},
+            {code: "77", name: "BANCO INTER S.A", ispb: "416968"},
+            {code: "341", name: "ITAÚ UNIBANCO S.A", ispb: "60701190"},
+            {code: "104", name: "CAIXA ECONÔMICA FEDERAL (CEF)", ispb: "360305"},
+            {code: "33", name: "BANCO SANTANDER BRASIL S.A", ispb: "90400888"},
+            {code: "212", name: "BANCO ORIGINAL S.A", ispb: "92894922"},
+            {code: "756", name: "BANCOOB (BANCO COOPERATIVO DO BRASIL)", ispb: "2038232"},
+            {code: "655", name: "BANCO VOTORANTIM S.A", ispb: "59588111"},
+            {code: "655", name: "NEON PAGAMENTOS S.A (OS MESMOS DADOS DO BANCO VOTORANTIM)", ispb: "59588111"},
+            {code: "41", name: "BANRISUL – BANCO DO ESTADO DO RIO GRANDE DO SUL S.A", ispb: "92702067"},
+            {code: "389", name: "BANCO MERCANTIL DO BRASIL S.A", ispb: "17184037"},
+            {code: "422", name: "BANCO SAFRA S.A", ispb: "58160789"},
+            {code: "70", name: "BANCO DE BRASÍLIA (BRB)", ispb: "208"},
+            {code: "136", name: "UNICRED COOPERATIVA", ispb: "315557"},
+            {code: "741", name: "BANCO RIBEIRÃO PRETO", ispb: "517645"},
+            {code: "739", name: "BANCO CETELEM S.A", ispb: "558456"},
+            {code: "743", name: "BANCO SEMEAR S.A", ispb: "795423"},
+            {code: "100", name: "PLANNER CORRETORA DE VALORES S.A", ispb: "806535"},
+            {code: "96", name: "BANCO B3 S.A", ispb: "997185"},
+            {code: "747", name: "Banco RABOBANK INTERNACIONAL DO BRASIL S.A", ispb: "1023570"},
+            {code: "748", name: "SICREDI S.A", ispb: "1181521"},
+            {code: "752", name: "BNP PARIBAS BRASIL S.A", ispb: "1522368"},
+            {code: "91", name: "UNICRED CENTRAL RS", ispb: "1634601"},
+            {code: "399", name: "KIRTON BANK", ispb: "1701201"},
+            {code: "108", name: "PORTOCRED S.A", ispb: "1800019"},
+            {code: "757", name: "BANCO KEB HANA DO BRASIL S.A", ispb: "2318507"},
+            {code: "102", name: "XP INVESTIMENTOS S.A", ispb: "2332886"},
+            {code: "348", name: "BANCO XP S/A", ispb: "33264668"},
+            {code: "340", name: "SUPER PAGAMENTOS S/A (SUPERDITAL)", ispb: "9554480"},
+            {code: "364", name: "GERENCIANET PAGAMENTOS DO BRASIL", ispb: "9089356"},
+            {code: "84", name: "UNIPRIME NORTE DO PARANÁ", ispb: "2398976"},
+            {code: "180", name: "CM CAPITAL MARKETS CCTVM LTDA", ispb: "2685483"},
+            {code: "66", name: "BANCO MORGAN STANLEY S.A", ispb: "2801938"},
+            {code: "15", name: "UBS BRASIL CCTVM S.A", ispb: "2819125"},
+            {code: "143", name: "TREVISO CC S.A", ispb: "2992317"},
+            {code: "62", name: "HIPERCARD BM S.A", ispb: "3012230"},
+            {code: "74", name: "BCO. J.SAFRA S.A", ispb: "3017677"},
+            {code: "99", name: "UNIPRIME CENTRAL CCC LTDA", ispb: "3046391"},
+            {code: "25", name: "BANCO ALFA S.A.", ispb: "3323840"},
+            {code: "75", name: "BCO ABN AMRO S.A", ispb: "3532415"},
+            {code: "40", name: "BANCO CARGILL S.A", ispb: "3609817"},
+            {code: "190", name: "SERVICOOP", ispb: "3973814"},
+            {code: "63", name: "BANCO BRADESCARD", ispb: "4184779"},
+            {code: "191", name: "NOVA FUTURA CTVM LTDA", ispb: "4257795"},
+            {code: "64", name: "GOLDMAN SACHS DO BRASIL BM S.A", ispb: "4332281"},
+            {code: "97", name: "CCC NOROESTE BRASILEIRO LTDA", ispb: "4632856"},
+            {code: "16", name: "CCM DESP TRÂNS SC E RS", ispb: "4715685"},
+            {code: "12", name: "BANCO INBURSA", ispb: "4866275"},
+            {code: "3", name: "BANCO DA AMAZONIA S.A", ispb: "4902979"},
+            {code: "60", name: "CONFIDENCE CC S.A", ispb: "4913129"},
+            {code: "37", name: "BANCO DO ESTADO DO PARÁ S.A", ispb: "4913711"},
+            {code: "159", name: "CASA CREDITO S.A", ispb: "5442029"},
+            {code: "172", name: "ALBATROSS CCV S.A", ispb: "5452073"},
+            {code: "85", name: "COOP CENTRAL AILOS", ispb: "5463212"},
+            {code: "114", name: "CENTRAL COOPERATIVA DE CRÉDITO NO ESTADO DO ESPÍRITO SANTO", ispb: "5790149"},
+            {code: "36", name: "BANCO BBI S.A", ispb: "6271464"},
+            {code: "394", name: "BANCO BRADESCO FINANCIAMENTOS S.A", ispb: "7207996"},
+            {code: "4", name: "BANCO DO NORDESTE DO BRASIL S.A.", ispb: "7237373"},
+            {code: "320", name: "BANCO CCB BRASIL S.A", ispb: "7450604"},
+            {code: "189", name: "HS FINANCEIRA", ispb: "7512441"},
+            {code: "105", name: "LECCA CFI S.A", ispb: "7652226"},
+            {code: "76", name: "BANCO KDB BRASIL S.A.", ispb: "7656500"},
+            {code: "82", name: "BANCO TOPÁZIO S.A", ispb: "7679404"},
+            {code: "286", name: "CCR DE OURO", ispb: "7853842"},
+            {code: "93", name: "PÓLOCRED SCMEPP LTDA", ispb: "7945233"},
+            {code: "273", name: "CCR DE SÃO MIGUEL DO OESTE", ispb: "8253539"},
+            {code: "157", name: "ICAP DO BRASIL CTVM LTDA", ispb: "9105360"},
+            {code: "183", name: "SOCRED S.A", ispb: "9210106"},
+            {code: "14", name: "NATIXIS BRASIL S.A", ispb: "9274232"},
+            {code: "130", name: "CARUANA SCFI", ispb: "9313766"},
+            {code: "127", name: "CODEPE CVC S.A", ispb: "9512542"},
+            {code: "79", name: "BANCO ORIGINAL DO AGRONEGÓCIO S.A", ispb: "9516419"},
+            {code: "81", name: "BBN BANCO BRASILEIRO DE NEGOCIOS S.A", ispb: "10264663"},
+            {code: "118", name: "STANDARD CHARTERED BI S.A", ispb: "11932017"},
+            {code: "133", name: "CRESOL CONFEDERAÇÃO", ispb: "10398952"},
+            {code: "121", name: "BANCO AGIBANK S.A", ispb: "10664513"},
+            {code: "83", name: "BANCO DA CHINA BRASIL S.A", ispb: "10690848"},
+            {code: "138", name: "GET MONEY CC LTDA", ispb: "10853017"},
+            {code: "24", name: "BCO BANDEPE S.A", ispb: "10866788"},
+            {code: "95", name: "BANCO CONFIDENCE DE CÂMBIO S.A", ispb: "11703662"},
+            {code: "94", name: "BANCO FINAXIS", ispb: "11758741"},
+            {code: "276", name: "SENFF S.A", ispb: "11970623"},
+            {code: "137", name: "MULTIMONEY CC LTDA", ispb: "12586596"},
+            {code: "92", name: "BRK S.A", ispb: "12865507"},
+            {code: "47", name: "BANCO BCO DO ESTADO DE SERGIPE S.A", ispb: "13009717"},
+            {code: "144", name: "BEXS BANCO DE CAMBIO S.A.", ispb: "13059145"},
+            {code: "126", name: "BR PARTNERS BI", ispb: "13220493"},
+            {code: "301", name: "BPP INSTITUIÇÃO DE PAGAMENTOS S.A", ispb: "13370835"},
+            {code: "173", name: "BRL TRUST DTVM SA", ispb: "13486793"},
+            {code: "119", name: "BANCO WESTERN UNION", ispb: "13720915"},
+            {code: "254", name: "PARANA BANCO S.A", ispb: "14388334"},
+            {code: "268", name: "BARIGUI CH", ispb: "14511781"},
+            {code: "107", name: "BANCO BOCOM BBM S.A", ispb: "15114366"},
+            {code: "412", name: "BANCO CAPITAL S.A", ispb: "15173776"},
+            {code: "124", name: "BANCO WOORI BANK DO BRASIL S.A", ispb: "15357060"},
+            {code: "149", name: "FACTA S.A. CFI", ispb: "15581638"},
+            {code: "197", name: "STONE PAGAMENTOS S.A", ispb: "16501555"},
+            {code: "142", name: "BROKER BRASIL CC LTDA", ispb: "16944141"},
+            {code: "389", name: "BANCO MERCANTIL DO BRASIL S.A.", ispb: "17184037"},
+            {code: "184", name: "BANCO ITAÚ BBA S.A", ispb: "17298092"},
+            {code: "634", name: "BANCO TRIANGULO S.A (BANCO TRIÂNGULO)", ispb: "17351180"},
+            {code: "545", name: "SENSO CCVM S.A", ispb: "17352220"},
+            {code: "132", name: "ICBC DO BRASIL BM S.A", ispb: "17453575"},
+            {code: "298", name: "VIPS CC LTDA", ispb: "17772370"},
+            {code: "129", name: "UBS BRASIL BI S.A", ispb: "18520834"},
+            {code: "128", name: "MS BANK S.A BANCO DE CÂMBIO", ispb: "19307785"},
+            {code: "194", name: "PARMETAL DTVM LTDA", ispb: "20155248"},
+            {code: "310", name: "VORTX DTVM LTDA", ispb: "22610500"},
+            {code: "163", name: "COMMERZBANK BRASIL S.A BANCO MÚLTIPLO", ispb: "23522214"},
+            {code: "280", name: "AVISTA S.A", ispb: "23862762"},
+            {code: "146", name: "GUITTA CC LTDA", ispb: "24074692"},
+            {code: "279", name: "CCR DE PRIMAVERA DO LESTE", ispb: "26563270"},
+            {code: "182", name: "DACASA FINANCEIRA S/A", ispb: "27406222"},
+            {code: "278", name: "GENIAL INVESTIMENTOS CVM S.A", ispb: "27652684"},
+            {code: "271", name: "IB CCTVM LTDA", ispb: "27842177"},
+            {code: "21", name: "BANCO BANESTES S.A", ispb: "28127603"},
+            {code: "246", name: "BANCO ABC BRASIL S.A", ispb: "28195667"},
+            {code: "751", name: "SCOTIABANK BRASIL", ispb: "29030467"},
+            {code: "208", name: "BANCO BTG PACTUAL S.A", ispb: "30306294"},
+            {code: "746", name: "BANCO MODAL S.A", ispb: "30723886"},
+            {code: "241", name: "BANCO CLASSICO S.A", ispb: "31597552"},
+            {code: "612", name: "BANCO GUANABARA S.A", ispb: "31880826"},
+            {code: "604", name: "BANCO INDUSTRIAL DO BRASIL S.A", ispb: "31895683"},
+            {code: "505", name: "BANCO CREDIT SUISSE (BRL) S.A", ispb: "32062580"},
+            {code: "196", name: "BANCO FAIR CC S.A", ispb: "32648370"},
+            {code: "300", name: "BANCO LA NACION ARGENTINA", ispb: "33042151"},
+            {code: "477", name: "CITIBANK N.A", ispb: "33042953"},
+            {code: "266", name: "BANCO CEDULA S.A", ispb: "33132044"},
+            {code: "122", name: "BANCO BRADESCO BERJ S.A", ispb: "33147315"},
+            {code: "376", name: "BANCO J.P. MORGAN S.A", ispb: "33172537"},
+            {code: "473", name: "BANCO CAIXA GERAL BRASIL S.A", ispb: "33466988"},
+            {code: "745", name: "BANCO CITIBANK S.A", ispb: "33479023"},
+            {code: "120", name: "BANCO RODOBENS S.A", ispb: "33603457"},
+            {code: "265", name: "BANCO FATOR S.A", ispb: "33644196"},
+            {code: "7", name: "BNDES (Banco Nacional do Desenvolvimento Social)", ispb: "33657248"},
+            {code: "188", name: "ATIVA S.A INVESTIMENTOS", ispb: "33775974"},
+            {code: "134", name: "BGC LIQUIDEZ DTVM LTDA", ispb: "33862244"},
+            {code: "641", name: "BANCO ALVORADA S.A", ispb: "33870163"},
+            {code: "29", name: "BANCO ITAÚ CONSIGNADO S.A", ispb: "33885724"},
+            {code: "243", name: "BANCO MÁXIMA S.A", ispb: "33923798"},
+            {code: "78", name: "HAITONG BI DO BRASIL S.A", ispb: "34111187"},
+            {code: "111", name: "BANCO OLIVEIRA TRUST DTVM S.A", ispb: "36113876"},
+            {code: "17", name: "BNY MELLON BANCO S.A", ispb: "42272526"},
+            {code: "174", name: "PERNAMBUCANAS FINANC S.A", ispb: "43180355"},
+            {code: "495", name: "LA PROVINCIA BUENOS AIRES BANCO", ispb: "44189447"},
+            {code: "125", name: "BRASIL PLURAL S.A BANCO", ispb: "45246410"},
+            {code: "488", name: "JPMORGAN CHASE BANK", ispb: "46518205"},
+            {code: "65", name: "BANCO ANDBANK S.A", ispb: "48795256"},
+            {code: "492", name: "ING BANK N.V", ispb: "49336860"},
+            {code: "250", name: "BANCO BCV", ispb: "50585090"},
+            {code: "145", name: "LEVYCAM CCV LTDA", ispb: "50579044"},
+            {code: "494", name: "BANCO REP ORIENTAL URUGUAY", ispb: "51938876"},
+            {code: "253", name: "BEXS CC S.A", ispb: "52937216"},
+            {code: "269", name: "HSBC BANCO DE INVESTIMENTO", ispb: "53518684"},
+            {code: "213", name: "BCO ARBI S.A", ispb: "54403563"},
+            {code: "139", name: "INTESA SANPAOLO BRASIL S.A", ispb: "55230916"},
+            {code: "18", name: "BANCO TRICURY S.A", ispb: "57839805"},
+            {code: "630", name: "BANCO INTERCAP S.A", ispb: "58497702"},
+            {code: "224", name: "BANCO FIBRA S.A", ispb: "58616418"},
+            {code: "600", name: "BANCO LUSO BRASILEIRO S.A", ispb: "59118133"},
+            {code: "623", name: "BANCO PAN", ispb: "59285411"},
+            {code: "204", name: "BANCO BRADESCO CARTOES S.A", ispb: "59438325"},
+            {code: "479", name: "BANCO ITAUBANK S.A", ispb: "60394079"},
+            {code: "456", name: "BANCO MUFG BRASIL S.A", ispb: "60498557"},
+            {code: "464", name: "BANCO SUMITOMO MITSUI BRASIL S.A", ispb: "60518222"},
+            {code: "613", name: "OMNI BANCO S.A", ispb: "60850229"},
+            {code: "652", name: "ITAÚ UNIBANCO HOLDING BM S.A", ispb: "60872504"},
+            {code: "653", name: "BANCO INDUSVAL S.A", ispb: "61024352"},
+            {code: "69", name: "BANCO CREFISA S.A", ispb: "61033106"},
+            {code: "370", name: "BANCO MIZUHO S.A", ispb: "61088183"},
+            {code: "249", name: "BANCO INVESTCRED UNIBANCO S.A", ispb: "61182408"},
+            {code: "318", name: "BANCO BMG S.A", ispb: "61186680"},
+            {code: "626", name: "BANCO FICSA S.A", ispb: "61348538"},
+            {code: "270", name: "SAGITUR CC LTDA", ispb: "61444949"},
+            {code: "366", name: "BANCO SOCIETE GENERALE BRASIL", ispb: "61533584"},
+            {code: "113", name: "MAGLIANO S.A", ispb: "61723847"},
+            {code: "131", name: "TULLETT PREBON BRASIL CVC LTDA", ispb: "61747085"},
+            {code: "11", name: "C.SUISSE HEDGING-GRIFFO CV S.A (Credit Suisse)", ispb: "61809182"},
+            {code: "611", name: "BANCO PAULISTA", ispb: "61820817"},
+            {code: "755", name: "BOFA MERRILL LYNCH BM S.A", ispb: "62073200"},
+            {code: "89", name: "CCR REG MOGIANA", ispb: "62109566"},
+            {code: "643", name: "BANCO PINE S.A", ispb: "62144175"},
+            {code: "140", name: "EASYNVEST - TÍTULO CV S.A", ispb: "62169875"},
+            {code: "707", name: "BANCO DAYCOVAL S.A", ispb: "62232889"},
+            {code: "288", name: "CAROL DTVM LTDA", ispb: "62237649"},
+            {code: "101", name: "RENASCENCA DTVM LTDA", ispb: "62287735"},
+            {code: "487", name: "DEUTSCHE BANK S.A BANCO ALEMÃO", ispb: "62331228"},
+            {code: "233", name: "BANCO CIFRA", ispb: "62421979"},
+            {code: "177", name: "GUIDE", ispb: "65913436"},
+            {code: "633", name: "BANCO RENDIMENTO S.A", ispb: "68900810"},
+            {code: "218", name: "BANCO BS2 S.A", ispb: "71027866"},
+            {code: "292", name: "BS2 DISTRIBUIDORA DE TÍTULOS E INVESTIMENTOS", ispb: "28650236"},
+            {code: "169", name: "BANCO OLÉ BONSUCESSO CONSIGNADO S.A", ispb: "71371686"},
+            {code: "293", name: "LASTRO RDV DTVM LTDA", ispb: "71590442"},
+            {code: "285", name: "FRENTE CC LTDA", ispb: "71677850"},
+            {code: "80", name: "B&T CC LTDA", ispb: "73622748"},
+            {code: "753", name: "NOVO BANCO CONTINENTAL S.A BM", ispb: "74828799"},
+            {code: "222", name: "BANCO CRÉDIT AGRICOLE BR S.A", ispb: "75647891"},
+            {code: "754", name: "BANCO SISTEMA", ispb: "76543115"},
+            {code: "98", name: "CREDIALIANÇA CCR", ispb: "78157146"},
+            {code: "610", name: "BANCO VR S.A", ispb: "78626983"},
+            {code: "712", name: "BANCO OURINVEST S.A", ispb: "78632767"},
+            {code: "10", name: "CREDICOAMO", ispb: "81723108"},
+            {code: "283", name: "RB CAPITAL INVESTIMENTOS DTVM LTDA", ispb: "89960090"},
+            {code: "217", name: "BANCO JOHN DEERE S.A", ispb: "91884981"},
+            {code: "117", name: "ADVANCED CC LTDA", ispb: "92856905"},
+            {code: "336", name: "BANCO C6 S.A - C6 BANK", ispb: "28326000"},
+            {code: "654", name: "BANCO DIGIMAIS S.A", ispb: "92874270"}
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsTable = document.getElementById('resultsTable');
+        const resultsCount = document.getElementById('resultsCount');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        let searchTimeout;
+
+        function highlightText(text, searchTerm) {
+            if (!searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\            {code: "169", name: "BANCO OLÉ BONSUCESSO CONSIGNADO S.A", ispb: "71371686"},')})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function performSearch(query) {
+            const searchTerm = query.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                resultsTable.innerHTML = '<tr class="loading"><td colspan="3">Digite algo para começar a busca...</td></tr>';
+                resultsCount.textContent = '0 bancos encontrados';
+                return;
+            }
+
+            const filteredBanks = bankData.filter(bank => {
+                return bank.name.toLowerCase().includes(searchTerm) ||
+                       bank.code.includes(searchTerm) ||
+                       bank.ispb.includes(searchTerm);
+            });
+
+            if (filteredBanks.length === 0) {
+                resultsTable.innerHTML = `
+                    <tr class="no-results">
+                        <td colspan="3">
+                            <div class="no-results-icon">🔍</div>
+                            <div>Nenhum banco encontrado para "${query}"</div>
+                            <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.7;">
+                                Tente buscar por nome, código ou ISPB
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                resultsCount.textContent = '0 bancos encontrados';
+                return;
+            }
+
+            const tableRows = filteredBanks.map(bank => `
+                <tr class="fade-in">
+                    <td>
+                        <span class="bank-code">${highlightText(bank.code, searchTerm)}</span>
+                    </td>
+                    <td>
+                        <span class="bank-name">${highlightText(bank.name, searchTerm)}</span>
+                    </td>
+                    <td>
+                        <span class="ispb-code">${highlightText(bank.ispb, searchTerm)}</span>
+                    </td>
+                </tr>
+            `).join('');
+
+            resultsTable.innerHTML = tableRows;
+            resultsCount.textContent = `${formatNumber(filteredBanks.length)} banco${filteredBanks.length !== 1 ? 's' : ''} encontrado${filteredBanks.length !== 1 ? 's' : ''}`;
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch(e.target.value);
+            }, 200);
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                clearTimeout(searchTimeout);
+                performSearch(e.target.value);
+            }
+        });
+
+        // Inicializar com todos os bancos
+        document.addEventListener('DOMContentLoaded', () => {
+            searchInput.focus();
+        });
+    </script>
+</body>
+</html>
