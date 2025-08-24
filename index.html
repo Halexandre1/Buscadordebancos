@@ -1,258 +1,79 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador de Bancos Brasileiros</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .title {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            color: rgba(255,255,255,0.9);
-            font-size: 1.1rem;
-            font-weight: 400;
-        }
-
-        .search-container {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 1rem 1.5rem 1rem 3rem;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 50px;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-        .search-input:focus {
-            background: white;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-            transform: translateY(-2px);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1.2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            font-size: 1.2rem;
-        }
-
-        .results-container {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .results-header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            padding: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .results-count {
-            background: rgba(255,255,255,0.2);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        .table-container {
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table th {
-            background: #f8fafc;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #374151;
-            border-bottom: 2px solid #e5e7eb;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .table td {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f5f9;
-            transition: background-color 0.2s ease;
-        }
-
-        .table tr:hover {
-            background: rgba(79, 172, 254, 0.05);
-        }
-
-        .bank-code {
-            font-weight: 600;
-            color: #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-            padding: 0.3rem 0.6rem;
-            border-radius: 6px;
-            display: inline-block;
-            min-width: 50px;
-            text-align: center;
-        }
-
-        .bank-name {
-            font-weight: 500;
-            color: #1f2937;
-        }
-
-        .ispb-code {
-            font-family: 'Monaco', 'Consolas', monospace;
-            color: #6b7280;
-            background: #f9fafb;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-        }
-
-        .no-results {
-            padding: 3rem;
-            text-align: center;
-            color: #6b7280;
-        }
-
-        .no-results-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .loading {
-            padding: 2rem;
-            text-align: center;
-            color: #6b7280;
-        }
-
-        .highlight {
-            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
-            padding: 0.1rem 0.2rem;
-            border-radius: 3px;
-            font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .table th,
-            .table td {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.9rem;
-            }
-            
-            .bank-name {
-                font-size: 0.85rem;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Bancos Brasileiros</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .highlight {
+        background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+        padding: 0.1rem 0.2rem;
+        border-radius: 3px;
+        font-weight: 600;
+    }
+    .dark .highlight {
+        background: linear-gradient(120deg, #3a7bd5 0%, #3a6073 100%);
+        color: white;
+    }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1 class="title">🏦 Buscador de Bancos</h1>
-            <p class="subtitle">Encontre informações dos bancos brasileiros de forma rápida e fácil</p>
-        </div>
+<body class="bg-slate-100 dark:bg-gray-900 text-slate-800 dark:text-slate-200">
 
-        <div class="search-container">
-            <div class="search-icon">🔍</div>
-            <input 
-                type="text" 
-                class="search-input" 
-                id="searchInput" 
-                placeholder="Digite o nome do banco, código ou ISPB..."
-                autocomplete="off"
-            >
-        </div>
-
-        <div class="results-container" id="resultsContainer">
-            <div class="results-header">
-                <span>📊 Resultados da Busca</span>
-                <span class="results-count" id="resultsCount">0 bancos encontrados</span>
-            </div>
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Nome do Banco</th>
-                            <th>Código ISPB</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultsTable">
-                        <tr class="loading">
-                            <td colspan="3">Digite algo para começar a busca...</td>
-                        </tr>
-                    </tbody>
-                </table>
+  <div class="container max-w-4xl mx-auto p-4">
+    <header class="mb-6 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <img src="https://raw.githubusercontent.com/Halexandre1/PDF_PRO/main/HERBERT.jpg" alt="Logótipo" class="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-800">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800 dark:text-white text-left">Buscador de Bancos</h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm text-left">Encontre informações dos bancos brasileiros</p>
             </div>
         </div>
+        <button id="themeToggle" class="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-transform hover:scale-110 shadow-md" aria-label="Alternar tema">🌙</button>
+    </header>
+
+    <div class="search-container relative mb-6">
+      <input type="text" id="searchInput" class="w-full p-4 pl-12 pr-10 text-base bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" placeholder="Digite o nome do banco, código ou ISPB..." autocomplete="off">
+      <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+        <i class="fas fa-search"></i>
+      </div>
+      <button id="clear-search" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 hidden">&times;</button>
     </div>
 
-    <script>
-        const bankData = [
-            { code: "1", name: "Banco do Brasil S.A.", ispb: "www.bb.com.br" },
+    <div class="results-container bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
+        <div class="results-header bg-indigo-600 text-white p-4 flex justify-between items-center">
+            <h2 class="font-semibold">📊 Resultados da Busca</h2>
+            <span id="resultsCount" class="bg-indigo-700 text-xs font-bold px-3 py-1 rounded-full">0 bancos encontrados</span>
+        </div>
+        <div class="table-container max-h-[60vh] overflow-y-auto">
+            <table class="table w-full text-sm text-left text-slate-500 dark:text-slate-400">
+                <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700 sticky top-0">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Código</th>
+                    <th scope="col" class="px-6 py-3">Nome do Banco</th>
+                    <th scope="col" class="px-6 py-3">ISPB / Site</th>
+                </tr>
+                </thead>
+                <tbody id="resultsTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <footer id="signature" class="text-center mt-6 text-sm text-slate-500 dark:text-slate-400"></footer>
+  </div>
+
+  <script id="searchWorker" type="javascript/worker">
+    // --- DADOS DOS BANCOS ---
+    const bankData = [
+        { code: "1", name: "Banco do Brasil S.A.", ispb: "www.bb.com.br" },
 { code: "3", name: "Banco da Amazônia S.A.", ispb: "www.bancoamazonia.com.br" },
 { code: "4", name: "Banco do Nordeste do Brasil S.A.", ispb: "www.banconordeste.gov.br" },
 { code: "7", name: "Banco Nacional de Desenvolvimento Econômico e Social – BNDES", ispb: "www.bndes.gov.br" },
@@ -504,92 +325,197 @@
 { code: "755", name: "Bank of America Merrill Lynch Banco Múltiplo S.A.", ispb: "www.ml.com" },
 { code: "756", name: "Banco Cooperativo do Brasil S.A. – BANCOOB", ispb: "www.bancoob.com.br" },
 { code: "757", name: "Banco KEB HANA do Brasil S.A.", ispb: "www.bancokeb.com.br" },
-        ];
+        // COLE A SUA LISTA COMPLETA AQUI
+    ];
 
-        const searchInput = document.getElementById('searchInput');
-        const resultsTable = document.getElementById('resultsTable');
-        const resultsCount = document.getElementById('resultsCount');
-        const resultsContainer = document.getElementById('resultsContainer');
+    const normalizeText = (str) => str.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-        let searchTimeout;
+    const allData = bankData.map(item => ({
+        ...item,
+        searchText: normalizeText(Object.values(item).join(' '))
+    }));
+    const totalRegistros = bankData.length;
 
-        function highlightText(text, searchTerm) {
-            if (!searchTerm) return text;
-            const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\            {code: "169", name: "BANCO OLÉ BONSUCESSO CONSIGNADO S.A", ispb: "71371686"},')})`, 'gi');
-            return text.replace(regex, '<span class="highlight">$1</span>');
+    self.onmessage = function(e) {
+        const termo = e.data.termo.trim();
+
+        if (termo === '') {
+            postMessage({ tipo: 'resultados', resultados: bankData, totalRegistros });
+            return;
         }
+        
+        const termoNormalizado = normalizeText(termo);
+        const searchTokens = termoNormalizado.split(' ').filter(Boolean);
 
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
+        const resultados = allData.filter(linha => {
+            return searchTokens.every(token => linha.searchText.includes(token));
+        });
 
-        function performSearch(query) {
-            const searchTerm = query.toLowerCase().trim();
-            
-            if (!searchTerm) {
-                resultsTable.innerHTML = '<tr class="loading"><td colspan="3">Digite algo para começar a busca...</td></tr>';
-                resultsCount.textContent = '0 bancos encontrados';
+        postMessage({ tipo: 'resultados', resultados, totalRegistros });
+    };
+  </script>
+
+  <script>
+    /**
+     * @file Buscador de Bancos - Versão Refatorada
+     * @author HAlexandre
+     * @version 2.0.0
+     */
+
+    // --- Módulo de UI ---
+    const UI = {
+        dom: {
+            searchInput: document.getElementById('searchInput'),
+            resultsTable: document.getElementById('resultsTable'),
+            resultsCount: document.getElementById('resultsCount'),
+            clearButton: document.getElementById('clear-search'),
+            themeToggle: document.getElementById('themeToggle'),
+            signature: document.getElementById('signature'),
+        },
+
+        renderizarTabela(resultados, termo) {
+            this.dom.resultsTable.innerHTML = '';
+            if (resultados.length === 0 && termo) {
+                this.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16 text-slate-500"><i class="fas fa-search text-4xl mb-4 block"></i>Nenhum banco encontrado para "${termo}"</td></tr>`;
+                return;
+            }
+             if (resultados.length === 0 && !termo) {
+                this.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16 text-slate-500">Digite algo para começar a busca...</td></tr>`;
                 return;
             }
 
-            const filteredBanks = bankData.filter(bank => {
-                return bank.name.toLowerCase().includes(searchTerm) ||
-                       bank.code.includes(searchTerm) ||
-                       bank.ispb.includes(searchTerm);
+            const fragment = document.createDocumentFragment();
+            const regex = termo ? new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi') : null;
+
+            resultados.forEach(banco => {
+                const tr = document.createElement('tr');
+                tr.className = "bg-white dark:bg-slate-800 border-b dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600";
+                
+                const highlight = (text) => regex ? text.replace(regex, `<span class="highlight">$1</span>`) : text;
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-indigo-600 dark:text-indigo-400">${highlight(banco.code)}</span>
+                            <button class="copy-btn p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-500" data-copy="${banco.code}" title="Copiar Código">
+                                <i class="far fa-copy"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">${highlight(banco.name)}</td>
+                    <td class="px-6 py-4 font-mono text-slate-500 dark:text-slate-400">${highlight(banco.ispb)}</td>
+                `;
+                fragment.appendChild(tr);
+            });
+            this.dom.resultsTable.appendChild(fragment);
+        },
+
+        atualizarContagem(count) {
+            this.dom.resultsCount.textContent = `${count} banco${count !== 1 ? 's' : ''} encontrado${count !== 1 ? 's' : ''}`;
+        },
+
+        toggleClearButton(visible) {
+            this.dom.clearButton.classList.toggle('hidden', !visible);
+        },
+
+        mostrarLoading() {
+            this.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 mx-auto"></div><p class="mt-4">Buscando...</p></td></tr>`;
+        },
+
+        loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                this.dom.themeToggle.textContent = '☀️';
+            } else {
+                this.dom.themeToggle.textContent = '🌙';
+            }
+        },
+
+        setSignature() {
+            this.dom.signature.innerHTML = `<p>Feito por HAlexandre © ${new Date().getFullYear()}</p>`;
+        }
+    };
+
+    // --- Módulo Principal da Aplicação ---
+    const App = {
+        searchWorker: null,
+        debounceTimer: null,
+
+        init() {
+            this.setupWorker();
+            this.setupEventListeners();
+            UI.loadTheme();
+            UI.setSignature();
+        },
+
+        setupWorker() {
+            try {
+                const workerBlob = new Blob([document.getElementById('searchWorker').textContent], { type: 'application/javascript' });
+                this.searchWorker = new Worker(URL.createObjectURL(workerBlob));
+                this.searchWorker.onmessage = (e) => {
+                    const { tipo, resultados } = e.data;
+                    if (tipo === 'resultados') {
+                        UI.renderizarTabela(resultados, UI.dom.searchInput.value);
+                        UI.atualizarContagem(resultados.length);
+                    }
+                };
+                this.searchWorker.postMessage({ termo: '' });
+            } catch (e) {
+                console.error("Erro ao iniciar o Web Worker:", e);
+                UI.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16 text-red-500">Ocorreu um erro ao carregar a aplicação.</td></tr>`;
+            }
+        },
+
+        setupEventListeners() {
+            UI.dom.searchInput.addEventListener('input', () => {
+                clearTimeout(this.debounceTimer);
+                UI.toggleClearButton(UI.dom.searchInput.value.length > 0);
+                UI.mostrarLoading();
+                this.debounceTimer = setTimeout(() => {
+                    this.searchWorker.postMessage({ termo: UI.dom.searchInput.value });
+                }, 300);
             });
 
-            if (filteredBanks.length === 0) {
-                resultsTable.innerHTML = `
-                    <tr class="no-results">
-                        <td colspan="3">
-                            <div class="no-results-icon">🔍</div>
-                            <div>Nenhum banco encontrado para "${query}"</div>
-                            <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.7;">
-                                Tente buscar por nome, código ou ISPB
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                resultsCount.textContent = '0 bancos encontrados';
-                return;
-            }
+            UI.dom.clearButton.addEventListener('click', () => {
+                UI.dom.searchInput.value = '';
+                UI.toggleClearButton(false);
+                this.searchWorker.postMessage({ termo: '' });
+                UI.dom.searchInput.focus();
+            });
 
-            const tableRows = filteredBanks.map(bank => `
-                <tr class="fade-in">
-                    <td>
-                        <span class="bank-code">${highlightText(bank.code, searchTerm)}</span>
-                    </td>
-                    <td>
-                        <span class="bank-name">${highlightText(bank.name, searchTerm)}</span>
-                    </td>
-                    <td>
-                        <span class="ispb-code">${highlightText(bank.ispb, searchTerm)}</span>
-                    </td>
-                </tr>
-            `).join('');
+            UI.dom.themeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                UI.dom.themeToggle.textContent = isDark ? '☀️' : '🌙';
+            });
+            
+            UI.dom.resultsTable.addEventListener('click', async (e) => {
+                const copyButton = e.target.closest('.copy-btn');
+                if (copyButton) {
+                    const textToCopy = copyButton.dataset.copy;
+                    try {
+                        const tempTextarea = document.createElement('textarea');
+                        tempTextarea.value = textToCopy;
+                        document.body.appendChild(tempTextarea);
+                        tempTextarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempTextarea);
 
-            resultsTable.innerHTML = tableRows;
-            resultsCount.textContent = `${formatNumber(filteredBanks.length)} banco${filteredBanks.length !== 1 ? 's' : ''} encontrado${filteredBanks.length !== 1 ? 's' : ''}`;
+                        const originalIcon = copyButton.innerHTML;
+                        copyButton.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                        setTimeout(() => { copyButton.innerHTML = originalIcon; }, 1500);
+                    } catch (err) {
+                        console.error('Failed to copy: ', err);
+                    }
+                }
+            });
         }
+    };
 
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                performSearch(e.target.value);
-            }, 200);
-        });
-
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                clearTimeout(searchTimeout);
-                performSearch(e.target.value);
-            }
-        });
-
-        // Inicializar com todos os bancos
-        document.addEventListener('DOMContentLoaded', () => {
-            searchInput.focus();
-        });
-    </script>
+    // --- Ponto de Entrada ---
+    document.addEventListener('DOMContentLoaded', () => App.init());
+  </script>
 </body>
 </html>
