@@ -26,10 +26,10 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 dark:bg-gray-900 text-slate-800 dark:text-slate-200">
+<body class="bg-slate-100 dark:bg-gray-900 text-slate-800 dark:text-slate-200 h-screen overflow-hidden">
 
-  <div class="container max-w-4xl mx-auto p-4">
-    <header class="mb-6 flex items-center justify-between gap-4">
+  <div class="container max-w-4xl mx-auto p-4 h-full flex flex-col">
+    <header class="mb-6 flex items-center justify-between gap-4 flex-shrink-0">
         <div class="flex items-center gap-4">
             <img src="https://raw.githubusercontent.com/Halexandre1/PDF_PRO/main/HERBERT.jpg" alt="Logótipo" class="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-800">
             <div>
@@ -40,7 +40,7 @@
         <button id="themeToggle" class="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-transform hover:scale-110 shadow-md" aria-label="Alternar tema">🌙</button>
     </header>
 
-    <div class="search-container relative mb-6">
+    <div class="search-container relative mb-6 flex-shrink-0">
       <input type="text" id="searchInput" class="w-full p-4 pl-12 pr-10 text-base bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" placeholder="Digite o nome do banco, código ou ISPB..." autocomplete="off">
       <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
         <i class="fas fa-search"></i>
@@ -48,12 +48,12 @@
       <button id="clear-search" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 hidden">&times;</button>
     </div>
 
-    <div class="results-container bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden">
-        <div class="results-header bg-indigo-600 text-white p-4 flex justify-between items-center">
+    <div class="results-container bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden flex flex-col flex-grow">
+        <div class="results-header bg-indigo-600 text-white p-4 flex justify-between items-center flex-shrink-0">
             <h2 class="font-semibold">📊 Resultados da Busca</h2>
             <span id="resultsCount" class="bg-indigo-700 text-xs font-bold px-3 py-1 rounded-full">0 bancos encontrados</span>
         </div>
-        <div class="table-container max-h-[60vh] overflow-y-auto">
+        <div class="table-container overflow-y-auto flex-grow">
             <table class="table w-full text-sm text-left text-slate-500 dark:text-slate-400">
                 <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700 sticky top-0">
                 <tr>
@@ -67,7 +67,7 @@
             </table>
         </div>
     </div>
-    <footer id="signature" class="text-center mt-6 text-sm text-slate-500 dark:text-slate-400"></footer>
+    <footer id="signature" class="text-center mt-6 text-sm text-slate-500 dark:text-slate-400 flex-shrink-0"></footer>
   </div>
 
   <script id="searchWorker" type="javascript/worker">
@@ -359,7 +359,7 @@
     /**
      * @file Buscador de Bancos - Versão Refatorada
      * @author HAlexandre
-     * @version 2.0.0
+     * @version 2.1.0
      */
 
     // --- Módulo de UI ---
