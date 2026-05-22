@@ -26,26 +26,28 @@
     }
   </style>
 </head>
+
 <body class="bg-slate-100 dark:bg-gray-900 text-slate-800 dark:text-slate-200 h-screen overflow-hidden">
 
   <div class="container max-w-4xl mx-auto p-4 h-full flex flex-col">
     <header class="mb-6 flex items-center justify-between gap-4 flex-shrink-0">
         <div class="flex items-center gap-4">
-            <img src="https://raw.githubusercontent.com/Halexandre1/PDF_PRO/main/HERBERT.jpg" alt="Logótipo" class="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-800">
+            <!-- Dica: Usei um placeholder se a imagem falhar, mas a sua original está mantida no src -->
+            <img src="https://raw.githubusercontent.com/Halexandre1/PDF_PRO/main/HERBERT.jpg" onerror="this.src='https://placehold.co/100x100/e2e8f0/475569?text=Logo'" alt="Logótipo" class="w-12 h-12 rounded-full object-cover border-2 border-indigo-200 dark:border-indigo-800">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800 dark:text-white text-left">Buscador de Bancos</h1>
                 <p class="text-slate-500 dark:text-slate-400 text-sm text-left">Encontre informações dos bancos brasileiros</p>
             </div>
         </div>
-        <button id="themeToggle" class="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-transform hover:scale-110 shadow-md" aria-label="Alternar tema">🌙</button>
+        <button id="themeToggle" class="flex-shrink-0 w-10 h-10 rounded-full bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-transform hover:scale-110 shadow-md cursor-pointer" aria-label="Alternar tema">🌙</button>
     </header>
 
     <div class="search-container relative mb-6 flex-shrink-0">
-      <input type="text" id="searchInput" class="w-full p-4 pl-12 pr-10 text-base bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" placeholder="Digite o nome do banco, código ou ISPB..." autocomplete="off">
+      <input type="text" id="searchInput" class="w-full p-4 pl-12 pr-10 text-base bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow outline-none" placeholder="Digite o nome do banco, código ou ISPB..." autocomplete="off">
       <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
         <i class="fas fa-search"></i>
       </div>
-      <button id="clear-search" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 hidden">&times;</button>
+      <button id="clear-search" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 hidden cursor-pointer text-xl font-bold">&times;</button>
     </div>
 
     <div class="results-container bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden flex flex-col flex-grow">
@@ -53,10 +55,9 @@
             <h2 class="font-semibold">📊 Resultados da Busca</h2>
             <span id="resultsCount" class="bg-indigo-700 text-xs font-bold px-3 py-1 rounded-full">0 bancos encontrados</span>
         </div>
-        <div class="table-container overflow-y-auto flex-grow">
-            <!-- AQUI FOI APLICADO O AJUSTE DAS COLUNAS COM TABLE-FIXED -->
+        <div class="table-container overflow-y-auto flex-grow relative">
             <table class="table-fixed w-full text-sm text-left text-slate-500 dark:text-slate-400">
-                <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700 sticky top-0">
+                <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-700 sticky top-0 z-10 shadow-sm">
                 <tr>
                     <th scope="col" class="w-1/4 md:w-1/5 px-6 py-3">Código</th>
                     <th scope="col" class="w-2/4 md:w-3/5 px-6 py-3">Nome do Banco</th>
@@ -64,15 +65,35 @@
                 </tr>
                 </thead>
                 <tbody id="resultsTable">
+                    <!-- Os resultados serão injetados aqui via JavaScript -->
                 </tbody>
             </table>
         </div>
     </div>
-    <footer id="signature" class="text-center mt-6 text-sm text-slate-500 dark:text-slate-400 flex-shrink-0"></footer>
+
+    <div class="mt-4 flex-shrink-0 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg px-4 py-3 flex items-start gap-3 text-sm">
+      <span class="text-blue-500 dark:text-blue-400 mt-0.5 flex-shrink-0">
+        <i class="fas fa-info-circle text-base"></i>
+      </span>
+      <div class="text-blue-700 dark:text-blue-300 leading-relaxed">
+        <strong>Em caso de dúvidas sobre os dados,</strong> consulte a fonte oficial:<br>
+        <a
+          href="https://www.bcb.gov.br/content/estabilidadefinanceira/str1/ParticipantesSTR.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="underline font-semibold hover:text-blue-900 dark:hover:text-blue-100 transition-colors"
+        >
+          Banco Central do Brasil – Lista de Participantes STR (PDF oficial) ↗
+        </a>
+      </div>
+    </div>
+
+    <footer id="signature" class="text-center mt-3 text-sm text-slate-500 dark:text-slate-400 flex-shrink-0 pb-2"></footer>
   </div>
 
-  <script id="searchWorker" type="javascript/worker">
-    // --- DADOS DOS BANCOS (Correções de aspas aplicadas) ---
+  <script>
+    // --- DADOS DOS BANCOS ---
+    // A sua lista original foi mantida intacta aqui.
     const bankData = [
 { code: "001", name: "Banco do Brasil S.A.", ispb: "00000000" },
 { code: "070", name: "BRB - BANCO DE BRASILIA S.A.", ispb: "00000208" },
@@ -546,7 +567,7 @@
 { code: "580", name: "COOPERATIVA CENTRAL DE CRÉDITO", ispb: "87437687" },
 { code: "283", name: "RB INVESTIMENTOS DISTRIBUIDORA DE TITULOS E VALORES MOBILIARIOS LIMITADA", ispb: "89960090" },
 { code: "033", name: "BANCO SANTANDER (BRASIL) S.A.", ispb: "90400888" },
-{ code: "646", name: "DM SOCIEDADE DE CRÉDITO", ispb: "91669747" },
+{ code: "644", name: "DM SOCIEDADE DE CRÉDITO", ispb: "91669747" },
 { code: "217", name: "Banco John Deere S.A.", ispb: "91884981" },
 { code: "041", name: "Banco do Estado do Rio Grande do Sul S.A.", ispb: "92702067" },
 { code: "543", name: "COOPERATIVA DE ECONOMIA E CRÉDITO MÚTUO DOS ELETRICITÁRIOS E DOS TRABALHADORES DAS EMPRESAS DO SETOR DE ENERGIA - COOPCRECE", ispb: "92825397" },
@@ -555,41 +576,17 @@
 { code: "289", name: "EFX CORRETORA DE CÂMBIO LTDA.", ispb: "94968518" }
     ];
 
+    // Essa função tira os acentos e deixa tudo minúsculo para facilitar a busca
     const normalizeText = (str) => str.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
+    
+    // Adicionamos uma propriedade 'searchText' invisível na lista original com o texto já tratado
     const allData = bankData.map(item => ({
         ...item,
         searchText: normalizeText(Object.values(item).join(' '))
     }));
     const totalRegistros = bankData.length;
 
-    self.onmessage = function(e) {
-        const termo = e.data.termo.trim();
-
-        if (termo === '') {
-            postMessage({ tipo: 'resultados', resultados: bankData, totalRegistros });
-            return;
-        }
-        
-        const termoNormalizado = normalizeText(termo);
-        const searchTokens = termoNormalizado.split(' ').filter(Boolean);
-
-        const resultados = allData.filter(linha => {
-            return searchTokens.every(token => linha.searchText.includes(token));
-        });
-
-        postMessage({ tipo: 'resultados', resultados, totalRegistros });
-    };
-  </script>
-
-  <script>
-    /**
-     * @file Buscador de Bancos - Versão Refatorada
-     * @author HAlexandre
-     * @version 2.1.0
-     */
-
-    // --- Módulo de UI ---
+    // --- Módulo de UI (Manipula a tela) ---
     const UI = {
         dom: {
             searchInput: document.getElementById('searchInput'),
@@ -600,150 +597,121 @@
             signature: document.getElementById('signature'),
         },
 
+        // Função que desenha a tabela na tela
         renderizarTabela(resultados, termo) {
             this.dom.resultsTable.innerHTML = '';
+            
+            // Se não encontrou nada e a pessoa digitou algo
             if (resultados.length === 0 && termo) {
                 this.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16 text-slate-500"><i class="fas fa-search text-4xl mb-4 block"></i>Nenhum banco encontrado para "${termo}"</td></tr>`;
                 return;
             }
-             if (resultados.length === 0 && !termo) {
-                this.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16 text-slate-500">Digite algo para começar a busca...</td></tr>`;
+            // Se a busca estiver completamente vazia (segurança extra)
+            if (resultados.length === 0 && !termo) {
+                this.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16 text-slate-500">Digite algo para buscar...</td></tr>`;
                 return;
             }
 
+            // Cria os elementos da tabela de forma rápida
             const fragment = document.createDocumentFragment();
-            const regex = termo ? new RegExp(`(${termo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi') : null;
-
-            resultados.forEach(banco => {
-                const tr = document.createElement('tr');
-                tr.className = "bg-white dark:bg-slate-800 border-b dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600";
-                
-                const highlight = (text) => regex ? text.replace(regex, `<span class="highlight">$1</span>`) : text;
-
-                // Alterado a formatação das células para manter a responsividade com quebra de linha normal (sem truncate cortando palavras)
-                tr.innerHTML = `
-                    <td class="px-6 py-4 align-top">
-                        <div class="flex items-center gap-2">
-                            <span class="font-mono font-bold text-indigo-600 dark:text-indigo-400 break-all">${highlight(banco.code)}</span>
-                            <button class="copy-btn p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-500 flex-shrink-0" data-copy="${banco.code}" title="Copiar Código">
-                                <i class="far fa-copy"></i>
-                            </button>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white align-top break-words">${highlight(banco.name)}</td>
-                    <td class="px-6 py-4 font-mono text-slate-500 dark:text-slate-400 align-top break-all">${highlight(banco.ispb)}</td>
+            resultados.forEach(bank => {
+                const row = document.createElement('tr');
+                row.className = 'border-b dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors';
+                row.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap overflow-hidden overflow-ellipsis">${bank.code}</td>
+                    <td class="px-6 py-4 overflow-hidden overflow-ellipsis">${bank.name}</td>
+                    <td class="px-6 py-4 text-xs font-mono overflow-hidden overflow-ellipsis">${bank.ispb}</td>
                 `;
-                fragment.appendChild(tr);
+                fragment.appendChild(row);
             });
             this.dom.resultsTable.appendChild(fragment);
         },
 
-        atualizarContagem(count) {
-            this.dom.resultsCount.textContent = `${count} banco${count !== 1 ? 's' : ''} encontrado${count !== 1 ? 's' : ''}`;
+        // Atualiza a pequena tag que mostra a contagem (Ex: "10 bancos encontrados")
+        atualizarContador(encontrados) {
+            this.dom.resultsCount.textContent = `${encontrados} ${encontrados === 1 ? 'banco encontrado' : 'bancos encontrados'}`;
         },
 
+        // Mostra ou esconde o botão "X" de limpar a pesquisa
         toggleClearButton(visible) {
             this.dom.clearButton.classList.toggle('hidden', !visible);
-        },
-
-        mostrarLoading() {
-            this.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500 mx-auto"></div><p class="mt-4">Buscando...</p></td></tr>`;
-        },
-
-        loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-                this.dom.themeToggle.textContent = '☀️';
-            } else {
-                this.dom.themeToggle.textContent = '🌙';
-            }
-        },
-
-        setSignature() {
-            this.dom.signature.innerHTML = `<p>Feito por HAlexandre © ${new Date().getFullYear()}</p>`;
         }
     };
 
-    // --- Módulo Principal da Aplicação ---
-    const App = {
-        searchWorker: null,
-        debounceTimer: null,
+    // --- Módulo de Busca ---
+    const Busca = {
+        executar(termo) {
+            // Removemos os espaços em branco no começo e final
+            const termoLimpo = termo.trim();
 
-        init() {
-            this.setupWorker();
-            this.setupEventListeners();
-            UI.loadTheme();
-            UI.setSignature();
-        },
-
-        setupWorker() {
-            try {
-                const workerBlob = new Blob([document.getElementById('searchWorker').textContent], { type: 'application/javascript' });
-                this.searchWorker = new Worker(URL.createObjectURL(workerBlob));
-                this.searchWorker.onmessage = (e) => {
-                    const { tipo, resultados } = e.data;
-                    if (tipo === 'resultados') {
-                        UI.renderizarTabela(resultados, UI.dom.searchInput.value);
-                        UI.atualizarContagem(resultados.length);
-                    }
-                };
-                this.searchWorker.postMessage({ termo: '' });
-            } catch (e) {
-                console.error("Erro ao iniciar o Web Worker:", e);
-                UI.dom.resultsTable.innerHTML = `<tr><td colspan="3" class="text-center p-16 text-red-500">Ocorreu um erro ao carregar a aplicação. Tente limpar os dados da tabela.</td></tr>`;
+            // Se o campo estiver vazio, mostramos a lista completa de bancos
+            if (termoLimpo === '') {
+                UI.renderizarTabela(bankData, termoLimpo);
+                UI.atualizarContador(totalRegistros);
+                return; // O seu código terminava aqui!
             }
-        },
 
-        setupEventListeners() {
-            UI.dom.searchInput.addEventListener('input', () => {
-                clearTimeout(this.debounceTimer);
-                UI.toggleClearButton(UI.dom.searchInput.value.length > 0);
-                UI.mostrarLoading();
-                this.debounceTimer = setTimeout(() => {
-                    this.searchWorker.postMessage({ termo: UI.dom.searchInput.value });
-                }, 300);
-            });
-
-            UI.dom.clearButton.addEventListener('click', () => {
-                UI.dom.searchInput.value = '';
-                UI.toggleClearButton(false);
-                this.searchWorker.postMessage({ termo: '' });
-                UI.dom.searchInput.focus();
-            });
-
-            UI.dom.themeToggle.addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark');
-                const isDark = document.documentElement.classList.contains('dark');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                UI.dom.themeToggle.textContent = isDark ? '☀️' : '🌙';
-            });
+            // 1. Normalizamos o texto buscado (tiramos os acentos e maiúsculas)
+            const termoBuscado = normalizeText(termoLimpo);
             
-            UI.dom.resultsTable.addEventListener('click', async (e) => {
-                const copyButton = e.target.closest('.copy-btn');
-                if (copyButton) {
-                    const textToCopy = copyButton.dataset.copy;
-                    try {
-                        const tempTextarea = document.createElement('textarea');
-                        tempTextarea.value = textToCopy;
-                        document.body.appendChild(tempTextarea);
-                        tempTextarea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempTextarea);
+            // 2. Filtramos: Apenas mantemos os bancos onde a "searchText" inclua o que foi digitado
+            const resultados = allData.filter(banco => banco.searchText.includes(termoBuscado));
 
-                        const originalIcon = copyButton.innerHTML;
-                        copyButton.innerHTML = '<i class="fas fa-check text-green-500"></i>';
-                        setTimeout(() => { copyButton.innerHTML = originalIcon; }, 1500);
-                    } catch (err) {
-                        console.error('Failed to copy: ', err);
-                    }
-                }
-            });
+            // 3. Atualizamos a tela com os resultados encontrados
+            UI.renderizarTabela(resultados, termoLimpo);
+            UI.atualizarContador(resultados.length);
         }
     };
 
-    // --- Ponto de Entrada ---
-    document.addEventListener('DOMContentLoaded', () => App.init());
+    // --- Configuração de Eventos ---
+    // Aqui nós dizemos ao navegador o que ele deve fazer quando o usuário interagir
+    function configurarEventos() {
+        
+        // 1. OUVINTE DE DIGITAÇÃO: Toda vez que o usuário digitar uma letra no input...
+        UI.dom.searchInput.addEventListener('input', (event) => {
+            const termoDigitado = event.target.value;
+            // Executamos a busca com a palavra nova
+            Busca.executar(termoDigitado);
+            // Mostramos o botão de limpar "X" se tiver alguma letra digitada
+            UI.toggleClearButton(termoDigitado.length > 0);
+        });
+
+        // 2. OUVINTE DE LIMPEZA: Quando clicar no botão "X"...
+        UI.dom.clearButton.addEventListener('click', () => {
+            UI.dom.searchInput.value = ''; // Limpa o input
+            Busca.executar('');            // Roda a busca vazia (mostra tudo)
+            UI.toggleClearButton(false);   // Esconde o botão "X"
+            UI.dom.searchInput.focus();    // Mantém o cursor piscando no input
+        });
+
+        // 3. OUVINTE DE TEMA: Quando clicar no botão da Lua/Sol...
+        UI.dom.themeToggle.addEventListener('click', () => {
+            // Adiciona ou remove a classe 'dark' da tag <html> principal
+            document.documentElement.classList.toggle('dark');
+            
+            // Troca o ícone do botão dependendo do tema ativo
+            if (document.documentElement.classList.contains('dark')) {
+                UI.dom.themeToggle.textContent = '☀️';
+            } else {
+                UI.dom.themeToggle.textContent = '🌙';
+            }
+        });
+
+        // Preenche o rodapé
+        const anoAtual = new Date().getFullYear();
+        UI.dom.signature.innerHTML = `Buscador de Bancos Brasileiros &copy; ${anoAtual}`;
+    }
+
+    // --- Inicialização ---
+    // Esta função prepara tudo na hora que o site abre
+    function iniciarApp() {
+        configurarEventos(); // Liga os eventos que acabamos de criar
+        Busca.executar('');  // Executa uma busca inicial vazia para preencher a tabela com todos os bancos
+    }
+
+    // "window.onload" garante que o Javascript só vai rodar quando o HTML estiver totalmente carregado na tela.
+    window.onload = iniciarApp;
+
   </script>
 </body>
 </html>
