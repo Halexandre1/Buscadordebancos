@@ -586,6 +586,33 @@
     }));
     const totalRegistros = bankData.length;
 
+    // --- Módulo de Funcionalidades Extras ---
+    // Função global para copiar o texto (colocada no objeto window para ser acessível pelo HTML)
+    window.copiarCodigo = function(texto, botaoElemento) {
+        // 1. Cria um campo de texto temporário e invisível para colocar o texto
+        const inputTemporario = document.createElement('textarea');
+        inputTemporario.value = texto;
+        document.body.appendChild(inputTemporario);
+        
+        // 2. Seleciona e copia o texto (usamos execCommand para melhor compatibilidade em diferentes ambientes)
+        inputTemporario.select();
+        document.execCommand('copy');
+        
+        // 3. Remove o campo temporário
+        document.body.removeChild(inputTemporario);
+
+        // 4. Feedback visual: Muda o ícone para um "V" (check) verde
+        const icone = botaoElemento.querySelector('i');
+        const classeOriginal = icone.className; // Guarda a classe antiga (far fa-copy)
+        
+        icone.className = 'fas fa-check text-green-500'; // Coloca a classe nova
+        
+        // 5. Depois de 2 segundos (2000 milissegundos), volta ao ícone original
+        setTimeout(() => {
+            icone.className = classeOriginal;
+        }, 2000);
+    };
+
     // --- Módulo de UI (Manipula a tela) ---
     const UI = {
         dom: {
@@ -617,8 +644,15 @@
             resultados.forEach(bank => {
                 const row = document.createElement('tr');
                 row.className = 'border-b dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors';
+                
+                // NOVO: Adicionamos flex e um botão ao lado do código do banco
                 row.innerHTML = `
-                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap overflow-hidden overflow-ellipsis">${bank.code}</td>
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap flex items-center gap-3">
+                        <span>${bank.code}</span>
+                        <button onclick="copiarCodigo('${bank.code}', this)" class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors focus:outline-none" title="Copiar código" aria-label="Copiar código do banco">
+                            <i class="far fa-copy"></i>
+                        </button>
+                    </td>
                     <td class="px-6 py-4 overflow-hidden overflow-ellipsis">${bank.name}</td>
                     <td class="px-6 py-4 text-xs font-mono overflow-hidden overflow-ellipsis">${bank.ispb}</td>
                 `;
@@ -655,7 +689,17 @@
             const termoBuscado = normalizeText(termoLimpo);
             
             // 2. Filtramos: Apenas mantemos os bancos onde a "searchText" inclua o que foi digitado
-            const resultados = allData.filter(banco => banco.searchText.includes(termoBuscado));
+            let resultados = allData.filter(banco => banco.searchText.includes(termoBuscado));
+
+            // NOVO: Filtragem Inteligente para Números Exatos
+            // Se o que o utilizador digitou for exatamente o código ou o ISPB de algum banco, 
+            // assumimos que ele quer encontrar apenas esse banco específico.
+            const resultadosExatos = resultados.filter(banco => banco.code === termoLimpo || banco.ispb === termoLimpo);
+            
+            // Se encontrou alguma correspondência exata, substitui a lista de resultados apenas por ela
+            if (resultadosExatos.length > 0) {
+                resultados = resultadosExatos;
+            }
 
             // 3. Atualizamos a tela com os resultados encontrados
             UI.renderizarTabela(resultados, termoLimpo);
